@@ -3,6 +3,7 @@ import cv2  # OpenCV Library for Facial Recognition using Real-time web data.
 import os
 from Crypto.Cipher import AES
 from Crypto import Random  # for SSL Encryption
+import time
 
 ################################### DEFINING ENCRYPTION CLASSES AND FUNCTIONS ######################################
 
@@ -65,10 +66,17 @@ key = b'[EX\xc8\xd5\xbfI{\xa2$\x05(\xd5\x18\xbf\xc0\x85)\x10nc\x94\x02)j\xdf\xcb
 enc = Encryptor(key)
 clear = lambda: os.system('cls')
 
-# Check if the 'obama.jpg' file exists
-if not os.path.exists('obama.jpg'):
-    print("Error: 'obama.jpg' file not found.")
-    exit()
+# Load known faces and compute their encodings
+known_face_encodings = []
+known_face_names = []
+
+# Load a sample picture and learn how to recognize it.
+obama_image = face_recognition.load_image_file("obama.jpg")
+obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
+
+# Append the encoding and name to the known_face_encodings and known_face_names lists
+known_face_encodings.append(obama_face_encoding)
+known_face_names.append("Barack Obama")
 
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
@@ -97,7 +105,6 @@ while True:
         face_names = []
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
-            # You need to define known_face_encodings and known_face_names
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.5)
             name = "Unknown"
             # If a match was found in known_face_encodings, just use the first one.
